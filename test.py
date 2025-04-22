@@ -16,6 +16,7 @@ if not file_path:
     print("No file selected. Exiting.")
     exit()
 
+
 print("You selected:", file_path)
 
 # Create base name for output
@@ -64,13 +65,28 @@ colors = ["FFEBEE", "E8F5E9", "E3F2FD", "FFF3E0", "F3E5F5", "E0F7FA", "F9FBE7"]
 wb = load_workbook(output_file)
 ws = wb.active # select the first sheet in the workbook
 
-for row in range(2, ws.max_row + 1):  # Loop over rows (skip header)
-    color_index = (row - 2) % len(colors)
+header_row = [cell.value for cell in ws[1]]
+product_col_index = header_row.index("product name") + 1  # openpyxl is 1-indexed
+
+colors = ["FFEBEE", "E8F5E9", "E3F2FD", "FFF3E0", "F3E5F5", "E0F7FA", "F9FBE7"]
+color_index = 0
+prev_product = None
+
+for row in range(2, ws.max_row + 1):  # Start from row 2 (skip header)
+    curr_product = ws.cell(row=row, column=product_col_index).value
+
+    if curr_product != prev_product:
+        color_index = (color_index + 1) % len(colors)
+        prev_product = curr_product
+
     fill_color = colors[color_index]
 
-    for col in range(1, ws.max_column + 1):  # Loop over columns in that row
-        cell = ws.cell(row=row, column=col)
-        cell.fill = PatternFill(start_color=fill_color, end_color=fill_color, fill_type="solid")
+    for col in range(1, ws.max_column + 1):
+        ws.cell(row=row, column=col).fill = PatternFill(
+            start_color=fill_color,
+            end_color=fill_color,
+            fill_type="solid"
+        )
 
 
 wb.save(output_file)
