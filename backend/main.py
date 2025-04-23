@@ -2,18 +2,28 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
 import os
 from backend.processor import process_excel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Add middleware to avoid CORS issues
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins = ["http://localhost:3000"], # or ["*"] for dev
+    allow_credentials = True, 
+    allow_methods = ["*"], 
+    allow_headers = ["*"]
+)
+
 @app.get("/")
 def homePage():
-    return "Welcome Home"
+    return "Welcome! This is from the backend"
 
 @app.get("/test")
 def testing():
-    name = "Ariel"
-    message = f"Hi {name}, testing successful!" 
-    return message
+    # name = "Ariel"
+    # message = f"Hi {name}, testing successful!" 
+    return {"message": "welcome~"}
 
 @app.post("/process/")
 async def process_file(file: UploadFile = File(...)):
