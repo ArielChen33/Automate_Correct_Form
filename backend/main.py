@@ -5,6 +5,16 @@ from backend.processor import process_excel
 
 app = FastAPI()
 
+@app.get("/")
+def homePage():
+    return "Welcome Home"
+
+@app.get("/test")
+def testing():
+    name = "Ariel"
+    message = f"Hi {name}, testing successful!" 
+    return message
+
 @app.post("/process/")
 async def process_file(file: UploadFile = File(...)):
     # Ensure upload directory exists
@@ -18,3 +28,4 @@ async def process_file(file: UploadFile = File(...)):
     output_path = process_excel(input_path)
 
     return FileResponse(output_path, filename=os.path.basename(output_path))
+
